@@ -3,8 +3,13 @@
 
     <item
         android:drawable="@drawable/home_icon"
+<<<<<<< HEAD
         android:width="15dp"
         android:height="15dp"
+=======
+        android:width="45dp"
+        android:height="45dp"
+>>>>>>> e6267c4c4e1d077c09a57c979d76d70f780bdfc2
         />
 
 </layer-list >

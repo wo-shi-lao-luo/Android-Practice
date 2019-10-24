@@ -16,6 +16,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+<<<<<<< HEAD
             <ImageView
                 android:layout_width="35dp"
                 android:layout_height="35dp"
@@ -27,6 +28,62 @@
                 android:hint="Search..."/>
 
             
+=======
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/home_icon_resize"
+                android:background="#FAFAFA"/>
+
+            <EditText
+                android:layout_width="230dp"
+                android:layout_height="55dp"
+                android:hint="Search..."/>
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/home_icon_resize"
+                android:background="#FAFAFA"/>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/home_icon_resize"
+                android:background="#FAFAFA"/>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/home_icon_resize"
+                android:background="#FAFAFA"/>
+            
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="210dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/home_icon"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Just a image"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                
+
+            </LinearLayout>
+
+>>>>>>> e6267c4c4e1d077c09a57c979d76d70f780bdfc2
         </LinearLayout>
     </LinearLayout>
 
