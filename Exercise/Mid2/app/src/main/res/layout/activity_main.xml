@@ -59,23 +59,25 @@
                         android:layout_width="93dp"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:layout_marginRight="1dp"
                         android:background="#ffffff">
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="226"
-                            android:textSize="30dp"
+                            android:textSize="26dp"
                             android:gravity="center"
                             android:textStyle="bold"
                             />
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="-10dp"
+                            android:layout_marginTop="-8dp"
                             android:text="photos"
                             android:textSize="15dp"
-                            android:gravity="center"/>
+                            android:gravity="center"
+                            android:paddingBottom="3dp"/>
 
                     </LinearLayout>
 
@@ -83,22 +85,24 @@
                         android:layout_width="93dp"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:layout_marginRight="1dp"
                         android:background="#ffffff">
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="24k"
-                            android:textSize="30dp"
+                            android:textSize="26dp"
                             android:gravity="center"
                             android:textStyle="bold"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="-10dp"
+                            android:layout_marginTop="-8dp"
                             android:text="followers"
                             android:textSize="15dp"
-                            android:gravity="center"/>
+                            android:gravity="center"
+                            android:paddingBottom="3dp"/>
 
                     </LinearLayout>
 
@@ -112,16 +116,17 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="104"
-                            android:textSize="30dp"
+                            android:textSize="26dp"
                             android:gravity="center"
                             android:textStyle="bold"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="-10dp"
+                            android:layout_marginTop="-8dp"
                             android:text="following"
                             android:textSize="15dp"
-                            android:gravity="center"/>
+                            android:gravity="center"
+                            android:paddingBottom="3dp"/>
 
                     </LinearLayout>
 
@@ -131,7 +136,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#ffffff"
-                    android:layout_marginTop="2dp">
+                    android:layout_marginTop="2dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp">
 
                     <Button
                         android:layout_width="match_parent"
@@ -140,7 +147,8 @@
                         android:layout_marginBottom="10dp"
                         android:background="@drawable/button"
                         android:text="Follow"
-                        android:textColor="#ffffff"/>
+                        android:textColor="#ffffff"
+                        />
 
                 </LinearLayout>
 
@@ -217,7 +225,7 @@
             android:orientation="vertical"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="15dp"
             >
 
             <LinearLayout
