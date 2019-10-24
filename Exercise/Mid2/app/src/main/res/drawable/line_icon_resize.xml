@@ -2,9 +2,9 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:drawable="@drawable/home_icon"
-        android:width="45dp"
-        android:height="45dp"
+        android:drawable="@drawable/line_icon"
+        android:width="25dp"
+        android:height="25dp"
         />
 
 </layer-list >
