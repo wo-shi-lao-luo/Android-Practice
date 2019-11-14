@@ -7,6 +7,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.*;
 import android.widget.*;
+import java.text.NumberFormat;
 
 public class MainActivity extends AppCompatActivity {
     EditText priceAmount;
@@ -33,11 +34,23 @@ public class MainActivity extends AppCompatActivity {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String text = s.toString();
+                if (text.contains(".") && text.substring(text.indexOf(".") + 1).length() > 2) {
+                    priceAmount.setText(text.substring(0, text.length() - 1));
+                    priceAmount.setSelection(priceAmount.getText().length());
+                }
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
-                price = Double.parseDouble(s.toString());
+                try {
+                    price = Double.parseDouble(s.toString());
+                }
+                catch (NumberFormatException e) {
+                    price = 0;
+                }
+                calculate();
             }
         });
 
@@ -51,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 tip = progress / 100.0;
+                calculate();
             }
         });
 
@@ -64,10 +78,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 tax = progress / 100.0;
+                calculate();
             }
         });
+
     }
 
-    
+    private void calculate() {
+        tipPercent.setText(NumberFormat.getPercentInstance().format(tip));
+        taxPercent.setText(NumberFormat.getPercentInstance().format(tax));
+
+        tipAmount.setText(NumberFormat.getCurrencyInstance().format(price * tip));
+        taxAmount.setText(NumberFormat.getCurrencyInstance().format(price * tax));
+        totalAmount.setText(NumberFormat.getCurrencyInstance().format(price * (1 + tax + tip)));
+    }
 
 }
