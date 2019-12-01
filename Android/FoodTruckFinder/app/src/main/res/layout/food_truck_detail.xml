@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F3F2">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:srcCompat="@drawable/tobedone"
+        android:adjustViewBounds="true"
+        android:background="#FFF"/>
+
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:padding="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFF">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/restaurant_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Restaurant Name"
+                android:textSize="30dp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="#000"/>
+            <TextView
+                android:id="@+id/style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Style"
+                android:textSize="20dp"
+                android:textStyle="bold|italic"
+                android:gravity="center"
+                android:textColor="#AAA"/>
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hour of Operations"
+                android:textSize="24dp"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+                android:id="@+id/operation_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00 am - 00:00 am"
+                android:textSize="20dp"
+                android:textStyle="italic"
+                android:gravity="center"
+                android:textColor="#000"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0"
+                android:layout_gravity="end"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:background="@drawable/rating_bg"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:padding="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#FFF">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Menu Recommendation"
+            android:textSize="24dp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="#000"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="190.5dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="55.5dp">
+
+                <ImageView
+                    android:id="@+id/recommendation1_image"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/tobedone"/>
+
+                <TextView
+                    android:id="@+id/recommendation1"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Recom1"
+                    android:textColor="#000"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/price1"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Price1"
+                    android:textColor="#000"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="190.5dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="35dp">
+
+                <ImageView
+                    android:id="@+id/recommendation2_image"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/tobedone"/>
+
+                <TextView
+                    android:id="@+id/recommendation2"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Recom1"
+                    android:textColor="#000"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/price2"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Price1"
+                    android:textColor="#000"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:background="#FFF">
+
+        <TextView
+            android:padding="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            android:textSize="24dp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="#000"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="320dp"
+        android:src="@drawable/tobedone"/>
+</LinearLayout>

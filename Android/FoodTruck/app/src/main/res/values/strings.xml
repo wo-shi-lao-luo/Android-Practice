@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">FoodTruck</string>
+    <string-array name="food_type">
+        <item>Asian</item>
+        <item>American</item>
+        <item>Mexican</item>
+        <item>Burger</item>
+    </string-array>
+</resources>
