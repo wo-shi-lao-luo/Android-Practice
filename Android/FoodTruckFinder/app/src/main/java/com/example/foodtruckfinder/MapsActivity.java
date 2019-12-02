@@ -64,7 +64,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         xian_cuisine = (LinearLayout) findViewById(R.id.xian_cuisine);
         xian_cuisine.setOnClickListener(this);
 
-        pako_takos = (LinearLayout) findViewById(R.id.pako_takos);
+        pako_takos = (LinearLayout) findViewById(R.id.pakos_takos);
         pako_takos.setOnClickListener(this);
 
         quickbite = (LinearLayout) findViewById(R.id.quickbite);
@@ -88,7 +88,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
             case R.id.xian_cuisine:
                 goTo("xian_cuisine");
                 break;
-            case R.id.pako_takos:
+            case R.id.pakos_takos:
                 goTo("pako_takos");
                 break;
             case R.id.quickbite:
