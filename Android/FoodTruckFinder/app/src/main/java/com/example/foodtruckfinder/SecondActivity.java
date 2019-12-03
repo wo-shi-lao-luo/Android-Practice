@@ -1,51 +1,68 @@
 package com.example.foodtruckfinder;
 
+import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
+
+import java.text.SimpleDateFormat;
+
 import java.util.Date;
+import java.util.Locale;
 
 public class SecondActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private FusedLocationProviderClient fusedLocationClient;
+    boolean mLocationPermissionGranted;
+    private Location mLastKnownLocation;
 
-    TextView name, style, operation, rating, rec1, rec2, price1, price2;
-    ImageView head_bg, rec1_pic, rec2_pic;
-//    Switch location, operating;
-    Button report;
-    LatLng location;
-    String restaurant_name;
+    private TextView name, style, operation, rating, rec1, rec2, price1, price2;
+    private ImageView head_bg, rec1_pic, rec2_pic;
+    private Switch location, operating;
+    private Button report;
+    private LatLng restaurant_location;
+
+    private String restaurant_name, operation_time_string;
+    private String[] start_time, end_time;
+
+    private SupportMapFragment mapFragment;
+    private ScrollView scroll;
+    private View trans_bg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,10 +82,36 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
         rec1_pic = (ImageView) findViewById(R.id.rec1_image);
         rec2_pic = (ImageView) findViewById(R.id.rec2_image);
 
-//        location = (Switch) findViewById(R.id.location_switch);
-//        operating = (Switch) findViewById(R.id.operating_switch);
+        location = (Switch) findViewById(R.id.location_switch);
+        operating = (Switch) findViewById(R.id.operating_switch);
 
         report = (Button) findViewById(R.id.report_btn);
+
+        scroll = (ScrollView) findViewById(R.id.scroll);
+        trans_bg = (View) findViewById(R.id.trans_bg);
+        trans_bg.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Disallow ScrollView to intercept touch events.
+                        scroll.requestDisallowInterceptTouchEvent(true);
+                        // Disable touch on transparent view
+                        return false;
+
+                    case MotionEvent.ACTION_UP:
+                        // Allow ScrollView to intercept touch events.
+                        scroll.requestDisallowInterceptTouchEvent(false);
+                        return true;
+
+                    default:
+                        return true;
+                }
+            }
+        });
+
+        getLocationPermission();
 
         String restaurant = getIntent().getStringExtra("restaurant");
         renderPage(restaurant);
@@ -81,26 +124,7 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
             }
         });
 
-//        location.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                Toast toast = Toast.makeText(SecondActivity.this, Html.fromHtml("<i><b>Thank you, we've got your report!</b></i>"), Toast.LENGTH_SHORT);
-//                toast.show();
-//            }
-//        });
-//        operating.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                Toast toast = Toast.makeText(SecondActivity.this, Html.fromHtml("<i><b>Thank you, we've got your report!</b></i>"), Toast.LENGTH_SHORT);
-//                toast.show();
-//            }
-//        });
-
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-//        mapFragment.getMapAsync(this);
-
     }
-
 
     /**
      * Manipulates the map once available.
@@ -111,16 +135,8 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        mMap.addMarker(new MarkerOptions().position(location).title(restaurant_name));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 17));
-    }
-
-    public void renderPage (String restaurant) {
+    public void renderPage(String restaurant) {
         Resources resources = getResources();
         int head_bg_id = resources.getIdentifier(restaurant + "_bg", "drawable", getPackageName());
         head_bg.setImageDrawable(getDrawable(head_bg_id));
@@ -153,7 +169,24 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
             restaurant_name = target.getString("name");
             name.setText(restaurant_name);
             style.setText(target.getString("type"));
-            operation.setText(target.getString("operation"));
+            JSONArray operation_time = target.getJSONArray("operation");
+            start_time = operation_time.getString(0).split(":");
+            if (Integer.parseInt(start_time[0]) <= 12) {
+                operation_time_string = "Mon - Fri " + start_time[0] + ":" + start_time[1] + " am";
+            }
+            else {
+                operation_time_string = "Mon - Fri " + String.valueOf(Integer.parseInt(start_time[0]) - 12) + ":" + start_time[1] + " pm";
+            }
+            operation_time_string += " - ";
+            end_time = operation_time.getString(1).split(":");
+            if (Integer.parseInt(end_time[0]) <= 12) {
+                operation_time_string += end_time[0] + ":" + end_time[1] + " am";
+            }
+            else {
+                operation_time_string += String.valueOf(Integer.parseInt(end_time[0]) - 12) + ":" + end_time[1] + " pm";
+            }
+            System.out.println(operation_time_string);
+            operation.setText(operation_time_string);
 
             //Render restaurant rating and rating background
             double rating_num = target.getDouble("rating");
@@ -170,15 +203,108 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
             price2.setText(rec.getJSONObject("r2").getString("price"));
 
             //Move map camera
-            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
-            location = new LatLng(target.getJSONArray("location").getDouble(0), target.getJSONArray("location").getDouble(1));
+            restaurant_location = new LatLng(target.getJSONArray("location").getDouble(0), target.getJSONArray("location").getDouble(1));
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        int currentTime = Calendar.getInstance().get(Calendar.HOUR);
-        System.out.println("```````");
-        System.out.println(currentTime);
+
+        //Set operating switch button checked status
+        Date now = new Date();
+        SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EEE", Locale.US);
+        String dayOfWeek = dayOfWeekFormat.format(now);
+        if (dayOfWeek.equals("Sat") || dayOfWeek.equals("Sun")) {
+            operating.setChecked(false);
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.US);
+        String[] currentTime = dateFormat.format(now).split(":");
+        if (Integer.parseInt(currentTime[0]) < Integer.parseInt(start_time[0])) {
+            operating.setChecked(false);
+        } else if (Integer.parseInt(currentTime[0]) == Integer.parseInt(start_time[0]) && Integer.parseInt(currentTime[1]) < Integer.parseInt(start_time[1])) {
+            operating.setChecked(false);
+        } else if (Integer.parseInt(currentTime[0]) > Integer.parseInt(end_time[0])) {
+            operating.setChecked(false);
+        } else if (Integer.parseInt(currentTime[0]) == Integer.parseInt(start_time[0]) && Integer.parseInt(currentTime[1]) > Integer.parseInt(end_time[1])) {
+            operating.setChecked(false);
+        }
     }
+
+    private void getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1234);
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        mMap.addMarker(new MarkerOptions().position(restaurant_location).title(restaurant_name));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(restaurant_location, 16));
+
+        if (mLocationPermissionGranted) {
+            // App has permission to access location in the foreground. Start your
+            // foreground service that has a foreground service type of "location".
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location current_location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (current_location != null) {
+                                // Logic to handle location object
+                                mLastKnownLocation = current_location;
+                                LatLng cur = new LatLng(current_location.getLatitude(), current_location.getLongitude());
+                                updateLocationUI();
+//                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cur, 17));
+
+                                // Update camera based on current location and restaurant location
+                                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                                builder.include(cur);
+                                builder.include(restaurant_location);
+                                LatLngBounds bounds = builder.build();
+
+                                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 180);
+                                mMap.animateCamera(cameraUpdate);
+                            }
+                        }
+                    });
+        } else {
+            // Make a request for foreground-only location access.
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1234);
+            mapFragment.getMapAsync(this);
+        }
+    }
+
+    private void updateLocationUI() {
+        if (mMap == null) {
+            return;
+        }
+        try {
+            if (mLocationPermissionGranted) {
+                mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            } else {
+                mMap.setMyLocationEnabled(false);
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                mLastKnownLocation = null;
+                getLocationPermission();
+            }
+        } catch (SecurityException e) {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
 }
+
+

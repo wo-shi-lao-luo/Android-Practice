@@ -259,7 +259,7 @@
                             android:layout_marginRight="20dp"
                             android:layout_marginBottom="15dp"
                             android:gravity="center"
-                            android:background="@drawable/rating_bg"
+                            android:background="@drawable/rating_mid_bg"
                             android:text="3.5"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -330,7 +330,7 @@
                             android:layout_marginRight="20dp"
                             android:layout_marginBottom="15dp"
                             android:gravity="center"
-                            android:background="@drawable/rating_bg"
+                            android:background="@drawable/rating_mid_bg"
                             android:text="3.2"
                             android:textSize="18sp"
                             android:textStyle="bold" />
