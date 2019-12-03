@@ -14,15 +14,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 public class MapsActivity extends FragmentActivity implements View.OnClickListener{
 
@@ -31,9 +24,9 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     LinearLayout xian_cuisine, pako_takos, quickbite, halal_grill, tasty_kabob, restaurant_list;
     Spinner spinner;
     EditText search;
-    List<String> names, styles;
 
-    JSONObject details;
+//    List<String> names, styles;
+//    JSONObject details;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,18 +34,6 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         setContentView(R.layout.index_page);
 
         spinner = (Spinner) findViewById(R.id.spinner);
-//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                // hide selection text
-//                ((TextView)view).setText(null);
-//                // if you want you can change background here
-//
-//                String type = String.valueOf(spinner.getSelectedItem());
-//
-//
-//            }
-//            public void onNothingSelected(AdapterView<?> arg0) {}
-//        });
         spinner.setOnItemSelectedListener(filterPage);
 
 //        parseJSON();
@@ -89,7 +70,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                 goTo("xian_cuisine");
                 break;
             case R.id.pakos_takos:
-                goTo("pako_takos");
+                goTo("pakos_takos");
                 break;
             case R.id.quickbite:
                 goTo("quickbite");
