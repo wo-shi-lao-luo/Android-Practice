@@ -8,5 +8,6 @@
         <item>Mediterranean</item>
         <item>Halal</item>
         <item>Middle Eastern</item>
+        <item>Favorite</item>
     </string-array>
 </resources>

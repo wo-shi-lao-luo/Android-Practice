@@ -7,26 +7,27 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
-import org.json.JSONObject;
-
-import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements View.OnClickListener{
 
-    public static final String EXTRA_MESSAGE = "FoodTruckFinder.MESSAGE";
+    private LinearLayout xian_cuisine, pako_takos, quickbite, halal_grill, tasty_kabob, restaurant_list;
+    private Spinner spinner;
+    private EditText search;
+    private ToggleButton xian_cuisin_fav, pakos_tako_fav, quickbite_fav, halal_grill_fav, tasty_kabob_fav;
 
-    LinearLayout xian_cuisine, pako_takos, quickbite, halal_grill, tasty_kabob, restaurant_list;
-    Spinner spinner;
-    EditText search;
-
-//    List<String> names, styles;
-//    JSONObject details;
+    private ScaleAnimation scaleAnimation;
+    private BounceInterpolator bounceInterpolator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,57 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         search = (EditText) findViewById(R.id.search);
         search.addTextChangedListener(searchPage);
 
+        //Toggle button animation effect
+        scaleAnimation = new ScaleAnimation(0.7f, 1.0f, 0.7f, 1.0f, Animation.RELATIVE_TO_SELF, 0.7f, Animation.RELATIVE_TO_SELF, 0.7f);
+        scaleAnimation.setDuration(500);
+        bounceInterpolator = new BounceInterpolator();
+        scaleAnimation.setInterpolator(bounceInterpolator);
+
+        xian_cuisin_fav = (ToggleButton) findViewById(R.id.xian_cuisine_fav);
+        xian_cuisin_fav.setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                   @Override
+                   public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                       //animation
+                       compoundButton.startAnimation(scaleAnimation);
+                   }
+               });
+        pakos_tako_fav = (ToggleButton) findViewById(R.id.pakos_takos_fav);
+        pakos_tako_fav.setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                        //animation
+                        compoundButton.startAnimation(scaleAnimation);
+                    }
+                });
+        quickbite_fav = (ToggleButton) findViewById(R.id.quickbite_fav);
+        quickbite_fav.setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                        //animation
+                        compoundButton.startAnimation(scaleAnimation);
+                    }
+                });
+        halal_grill_fav = (ToggleButton) findViewById(R.id.halal_grill_fav);
+        halal_grill_fav.setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                        //animation
+                        compoundButton.startAnimation(scaleAnimation);
+                    }
+                });
+        tasty_kabob_fav = (ToggleButton) findViewById(R.id.tasty_kabob_fav);
+        tasty_kabob_fav.setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                        //animation
+                        compoundButton.startAnimation(scaleAnimation);
+                    }
+                });
     }
 
     @Override
@@ -89,28 +141,6 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         intent.putExtra("restaurant", restaurant);
         startActivity(intent);
     }
-
-//    private void parseJSON () {
-//        InputStream inputStream = getResources().openRawResource(R.raw.truck_info);
-//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//
-//        int ctr;
-//        try {
-//            ctr = inputStream.read();
-//            while (ctr != -1) {
-//                byteArrayOutputStream.write(ctr);
-//                ctr = inputStream.read();
-//            }
-//            inputStream.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        try {
-//            details = new JSONObject(byteArrayOutputStream.toString());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     private TextWatcher searchPage = new TextWatcher() {
         @Override
@@ -151,6 +181,17 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                     LinearLayout v = (LinearLayout) restaurant_list.getChildAt(i);
                     v.setVisibility(LinearLayout.VISIBLE);
                 }
+            } else if (input.equals("favorite")) {
+                for (int i = 0; i < restaurant_list.getChildCount(); i++) {
+                    LinearLayout v = (LinearLayout) restaurant_list.getChildAt(i);
+                    v.setVisibility(LinearLayout.GONE);
+                }
+                if (xian_cuisin_fav.isChecked()) xian_cuisine.setVisibility(LinearLayout.VISIBLE);
+                if (pakos_tako_fav.isChecked()) pako_takos.setVisibility(LinearLayout.VISIBLE);
+                if (quickbite_fav.isChecked()) quickbite.setVisibility(LinearLayout.VISIBLE);
+                if (halal_grill_fav.isChecked()) halal_grill.setVisibility(LinearLayout.VISIBLE);
+                if (tasty_kabob_fav.isChecked()) tasty_kabob.setVisibility(LinearLayout.VISIBLE);
+
             } else {
                 for (int i = 0; i < restaurant_list.getChildCount(); i++) {
                     LinearLayout v = (LinearLayout) restaurant_list.getChildAt(i);
