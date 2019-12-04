@@ -97,6 +97,7 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
         report_operating = (Button) findViewById(R.id.report_operating_btn);
         report_location = (Button) findViewById(R.id.report_location_btn);
 
+        //Resolve ScrollView and GoogleMap conflict
         scroll = (ScrollView) findViewById(R.id.scroll);
         trans_bg = (View) findViewById(R.id.trans_bg);
         trans_bg.setOnTouchListener(new View.OnTouchListener() {
@@ -328,6 +329,9 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
                 public void onSuccess(Location current_location) {
                     // Got last known location. In some rare situations this can be null.
                     if (current_location != null) {
+                        mMap.clear();
+                        mMap.addMarker(restaurant_marker);
+
                         // Logic to handle location object
                         mLastKnownLocation = current_location;
                         LatLng cur = new LatLng(current_location.getLatitude(), current_location.getLongitude());
@@ -341,9 +345,6 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
 
                         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 180);
                         mMap.animateCamera(cameraUpdate);
-
-                        mMap.clear();
-                        mMap.addMarker(restaurant_marker);
                     }
                 }
             });
