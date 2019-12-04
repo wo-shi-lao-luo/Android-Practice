@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Switch;
@@ -27,6 +28,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -53,14 +56,20 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
 
     private TextView name, style, operation, rating, rec1, rec2, price1, price2;
     private ImageView head_bg, rec1_pic, rec2_pic;
+    private BitmapDescriptor restaurant_icon;
+
     private Switch location, operating;
-    private Button report;
+    private Button report_operating, report_location;
+    private Boolean operating_ori, location_ori;
+
     private LatLng restaurant_location;
 
     private String restaurant_name, operation_time_string;
     private String[] start_time, end_time;
 
     private SupportMapFragment mapFragment;
+    private MarkerOptions restaurant_marker;
+
     private ScrollView scroll;
     private View trans_bg;
 
@@ -85,7 +94,8 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
         location = (Switch) findViewById(R.id.location_switch);
         operating = (Switch) findViewById(R.id.operating_switch);
 
-        report = (Button) findViewById(R.id.report_btn);
+        report_operating = (Button) findViewById(R.id.report_operating_btn);
+        report_location = (Button) findViewById(R.id.report_location_btn);
 
         scroll = (ScrollView) findViewById(R.id.scroll);
         trans_bg = (View) findViewById(R.id.trans_bg);
@@ -116,7 +126,42 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
         String restaurant = getIntent().getStringExtra("restaurant");
         renderPage(restaurant);
 
-        report.setOnClickListener(new View.OnClickListener() {
+        operating_ori = operating.isChecked();
+        operating.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (operating_ori != isChecked) {
+                    report_operating.setVisibility(View.VISIBLE);
+                }
+                else {
+                    report_operating.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        location_ori = location.isChecked();
+        location.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (location_ori != isChecked) {
+                    addNewLocation();
+                }
+                else {
+                    mMap.setOnMapClickListener(null);
+                    updateMap();
+                    report_location.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        report_operating.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast toast = Toast.makeText(SecondActivity.this, Html.fromHtml("<i><b>Thank you, we've got your report!</b></i>"), Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+        report_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast toast = Toast.makeText(SecondActivity.this, Html.fromHtml("<i><b>Thank you, we've got your report!</b></i>"), Toast.LENGTH_SHORT);
@@ -124,6 +169,13 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
             }
         });
 
+        scroll.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                updateMap();
+                return false;
+            }
+        });
     }
 
     /**
@@ -144,6 +196,8 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
         rec1_pic.setImageDrawable(getDrawable(rec1_pic_id));
         int rec2_pic_id = resources.getIdentifier(restaurant + "_rec2", "drawable", getPackageName());
         rec2_pic.setImageDrawable(getDrawable(rec2_pic_id));
+        int index_bg_id = resources.getIdentifier(restaurant + "_index", "drawable", getPackageName());
+        restaurant_icon = BitmapDescriptorFactory.fromResource(index_bg_id);
 
         InputStream inputStream = getResources().openRawResource(R.raw.truck_info);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -229,6 +283,9 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
         } else if (Integer.parseInt(currentTime[0]) == Integer.parseInt(start_time[0]) && Integer.parseInt(currentTime[1]) > Integer.parseInt(end_time[1])) {
             operating.setChecked(false);
         }
+
+
+
     }
 
     private void getLocationPermission() {
@@ -248,41 +305,48 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        mMap.addMarker(new MarkerOptions().position(restaurant_location).title(restaurant_name));
+        // Setup restaurant map marker
+        restaurant_marker = new MarkerOptions();
+        restaurant_marker.position(restaurant_location);
+        restaurant_marker.title(restaurant_name);
+
+        // Add a marker and move the camera
+        mMap.addMarker(restaurant_marker);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(restaurant_location, 16));
 
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1234);
+
+    }
+
+    private void updateMap() {
         if (mLocationPermissionGranted) {
             // App has permission to access location in the foreground. Start your
             // foreground service that has a foreground service type of "location".
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location current_location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (current_location != null) {
-                                // Logic to handle location object
-                                mLastKnownLocation = current_location;
-                                LatLng cur = new LatLng(current_location.getLatitude(), current_location.getLongitude());
-                                updateLocationUI();
-//                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cur, 17));
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location current_location) {
+                    // Got last known location. In some rare situations this can be null.
+                    if (current_location != null) {
+                        // Logic to handle location object
+                        mLastKnownLocation = current_location;
+                        LatLng cur = new LatLng(current_location.getLatitude(), current_location.getLongitude());
+                        updateLocationUI();
 
-                                // Update camera based on current location and restaurant location
-                                LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                                builder.include(cur);
-                                builder.include(restaurant_location);
-                                LatLngBounds bounds = builder.build();
+                        // Update camera based on current location and restaurant location
+                        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                        builder.include(cur);
+                        builder.include(restaurant_location);
+                        LatLngBounds bounds = builder.build();
 
-                                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 180);
-                                mMap.animateCamera(cameraUpdate);
-                            }
-                        }
-                    });
-        } else {
-            // Make a request for foreground-only location access.
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1234);
-            mapFragment.getMapAsync(this);
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 180);
+                        mMap.animateCamera(cameraUpdate);
+
+                        mMap.clear();
+                        mMap.addMarker(restaurant_marker);
+                    }
+                }
+            });
         }
     }
 
@@ -305,6 +369,28 @@ public class SecondActivity extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
+    private void addNewLocation() {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(restaurant_location, 18));
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                //Setup new location map marker
+                MarkerOptions markerOptions= new MarkerOptions();
+                markerOptions.position(latLng);
+                markerOptions.title("Correct location");
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                markerOptions.draggable(true);
+
+                //Add marker to map
+                mMap.clear();
+                mMap.addMarker(restaurant_marker);
+                mMap.addMarker(markerOptions);
+
+                //Enable report
+                report_location.setVisibility(View.VISIBLE);
+            }
+        });
+    }
 }
 
 
