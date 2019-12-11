@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Toast.makeText(MainActivity.this, "Meow! Growl......", Toast.LENGTH_SHORT).show();
-        
+
         rating_bar = (RatingBar) findViewById(R.id.rating);
         submit = (Button) findViewById(R.id.submit);
         bg_image = (ImageView) findViewById(R.id.bg_image);
